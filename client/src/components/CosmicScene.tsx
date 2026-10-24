@@ -4,7 +4,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import gsap from "gsap";
 import config from "@/content/scene.config.json";
 
-type Props = { route: string; opacity?: number };
+type Props = { route: string; dir?: "ltr" | "rtl"; opacity?: number };
 type Pose = { x: number; y: number; scale: number; rotY: number };
 const poseFor = (route: string): Pose => {
   const r = config.routes as Record<string, Pose>;
@@ -20,9 +20,11 @@ const tube = (a: THREE.Vector3, b: THREE.Vector3, r: number, mat: THREE.Material
   return m;
 };
 
-export default function CosmicScene({ route, opacity = 0.95 }: Props) {
+export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const routeRef = useRef(route);
+  const flipRef = useRef(dir === "rtl" ? -1 : 1);
+  useEffect(() => { flipRef.current = dir === "rtl" ? -1 : 1; }, [dir]);
   const apiRef = useRef<{ goTo: (p: Pose) => void } | null>(null);
 
   useEffect(() => { routeRef.current = route; apiRef.current?.goTo(poseFor(route)); }, [route]);
@@ -113,7 +115,7 @@ export default function CosmicScene({ route, opacity = 0.95 }: Props) {
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     let scroll = 0, scrollT = 0;
     const pose = { ...poseFor(routeRef.current) };
-    rig.position.set(pose.x, pose.y, 0); rig.scale.setScalar(pose.scale); rig.rotation.y = pose.rotY;
+    rig.position.set(pose.x * flipRef.current, pose.y, 0); rig.scale.setScalar(pose.scale); rig.rotation.y = pose.rotY * flipRef.current;
     apiRef.current = { goTo: p => gsap.to(pose, { ...p, duration: 1.6, ease: "power3.inOut" }) };
 
     const onMove = (e: PointerEvent) => { mouse.tx = (e.clientX / window.innerWidth) * 2 - 1; mouse.ty = (e.clientY / window.innerHeight) * 2 - 1; };
@@ -136,9 +138,10 @@ export default function CosmicScene({ route, opacity = 0.95 }: Props) {
       mouse.x += (mouse.tx - mouse.x) * 0.06; mouse.y += (mouse.ty - mouse.y) * 0.06; scroll += (scrollT - scroll) * 0.05;
       const narrow = rig.userData.narrow as boolean;
 
-      rig.position.set(narrow ? 0 : pose.x, narrow ? pose.y + 0.4 : pose.y, 0);
+      const fl = flipRef.current;
+      rig.position.set(narrow ? 0 : pose.x * fl, narrow ? pose.y + 0.4 : pose.y, 0);
       rig.scale.setScalar(narrow ? pose.scale * 0.8 : pose.scale);
-      rig.rotation.y = pose.rotY + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * 0.08;
+      rig.rotation.y = pose.rotY * fl + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * 0.08;
       rig.rotation.x = mouse.y * config.mouse.tilt * 0.5;
       // beam leans with the mouse; pans stay level like a real balance
       const lean = THREE.MathUtils.clamp(mouse.x * config.mouse.beam + Math.sin(t * 0.8) * 0.035, -0.22, 0.22);

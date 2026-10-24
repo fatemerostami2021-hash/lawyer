@@ -3,8 +3,18 @@ import { Link } from "wouter";
 import { ArrowDownRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import { useLanguage } from "./SiteChrome";
 
-export function PageIntro({ index, kicker, title, children }: { index: string; kicker: string; title: string; children?: ReactNode }) {
-  return <section className="page-intro page-width"><div className="page-index"><span>{index}</span><i /></div><span className="section-kicker">{kicker}</span><h1>{title}</h1>{children && <p>{children}</p>}</section>;
+export function PageIntro({ index, kicker, title, children, image }: { index: string; kicker: string; title: string; children?: ReactNode; image?: "office" | "themis" | "gold-scales" | "meeting" }) {
+  return (
+    <section className={`page-intro page-width page-hero${image ? " has-image" : ""}`}>
+      <div className="page-hero-text">
+        <div className="page-index"><span>{index}</span><i /></div>
+        <span className="section-kicker">{kicker}</span>
+        <h1>{title}</h1>
+        {children && <p>{children}</p>}
+      </div>
+      {image && <figure className="page-hero-photo" data-tilt><div className="image-frame mm-layer" data-depth="8"><img src={`/assets/photos/${image}.webp`} alt="" loading="eager" /></div><span className="corner tl" /><span className="corner br" /></figure>}
+    </section>
+  );
 }
 
 export function Reveal({ children, className = "" }: { children: ReactNode; className?: string }) { return <div className={`reveal ${className}`}>{children}</div>; }

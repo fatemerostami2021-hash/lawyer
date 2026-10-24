@@ -2,7 +2,7 @@ import { createContext, lazy, Suspense, useContext, useEffect, useState, type Re
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, ChevronDown, Instagram, Linkedin, Mail, Menu, MessageCircle, Search, Send, X } from "lucide-react";
 import gsap from "gsap";
-import AnimatedScaleMark from "./AnimatedScaleMark";
+import Brand from "./Brand";
 import WaveText from "./WaveText";
 import { Flag } from "./Flags";
 import SearchOverlay from "./SearchOverlay";
@@ -50,14 +50,15 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <LanguageContext.Provider value={{ locale, setLocale, openSearch }}>
       <div className="site-shell dynamic-shell" dir={direction}>
-        <div className="cosmic-background"><Suspense fallback={<div className="webgl-fallback" />}><CosmicScene route={location} opacity={0.95} /></Suspense></div>
+        <div className="cosmic-background"><Suspense fallback={<div className="webgl-fallback" />}><CosmicScene route={location} dir={direction} opacity={location === "/" ? 1 : 0.5} /></Suspense></div>
         <header className="site-header dynamic-header" onMouseLeave={() => setMega(null)}>
           <div className="header-inner page-width">
-            <Link className="brand-lockup" href="/" aria-label="Sobhan Nikseresht Law home"><AnimatedScaleMark /><span className="brand-type"><strong>SOBHAN NIKSERESHT</strong><small>LAW</small></span></Link>
+            <Brand locale={locale} />
             <nav className="desktop-nav" aria-label="Primary navigation">
               {nav("/about", t("about"))}
               <div className="nav-item" onMouseEnter={() => setMega("expertise")}><Link href="/expertise" className={location === "/expertise" ? "active" : ""}><WaveText text={t("expertise")} locale={locale} /><ChevronDown size={12} /></Link></div>
               {nav("/approach", t("approach"))}
+              {nav("/insights", t("blog"))}
               <div className="nav-item" onMouseEnter={() => setMega("help")}><button type="button" className="nav-btn"><WaveText text={t("legalHelp")} locale={locale} /><ChevronDown size={12} /></button></div>
               {nav("/contact", t("contact"))}
             </nav>
@@ -96,7 +97,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
         <div className="route-layer">{children}</div>
         <footer className="site-footer dynamic-footer">
           <div className="page-width footer-inner">
-            <Link className="brand-lockup footer-brand" href="/"><AnimatedScaleMark /><span className="brand-type"><strong>SOBHAN NIKSERESHT</strong><small>LAW</small></span></Link>
+            <Brand locale={locale} footer />
             <span className="footer-line">{t("footer")}</span>
             <div className="footer-contact"><span dir="ltr">{SITE.phoneDisplay}</span><a href={`mailto:${SITE.email}`}><Mail size={13} />{SITE.email}</a><strong>{SITE.address}</strong></div>
             <div className="footer-social"><a href={SITE.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={15} /></a><a href={SITE.social.telegram} target="_blank" rel="noreferrer" aria-label="Telegram"><Send size={15} /></a><a href={SITE.social.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={15} /></a><a href={SITE.social.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={15} /></a></div>

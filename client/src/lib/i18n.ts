@@ -3,6 +3,7 @@ export type L3 = Record<Locale, string>;
 export const pick = (v: L3, l: Locale) => v[l];
 
 export const UI = {
+  brand: { en: "Dr. SOBHAN NIKSERESHT", fa: "دکتر سبحان نیک‌سرشت", ar: "الدكتور سبحان نيك سرشت" },
   home: { en: "Home", fa: "خانه", ar: "الرئيسية" },
   about: { en: "About", fa: "درباره ما", ar: "عن المكتب" },
   expertise: { en: "Expertise", fa: "حوزه‌های تخصصی", ar: "مجالات الخبرة" },

@@ -10,7 +10,7 @@ export default function ExpertisePage() {
   const [type, setType] = useState<AreaType | "all">("all");
   const list = useMemo(() => AREAS.filter(a => type === "all" || a.type === type), [type]);
   return <main className="route-page inner-page">
-    <PageIntro index="02" kicker={UI.expertise[locale]} title={UI.heroTitle[locale]}>{UI.heroSub[locale]}</PageIntro>
+    <PageIntro image="office" index="02" kicker={UI.expertise[locale]} title={UI.heroTitle[locale]}>{UI.heroSub[locale]}</PageIntro>
     <section className="filter-bar page-width"><span>{UI.filterTitle[locale]}</span>
       {(["all", "advisory", "transactions", "disputes"] as const).map(k => <button key={k} type="button" className={type === k ? "active" : ""} onClick={() => setType(k)}>{k === "all" ? UI.all[locale] : TYPES[k][locale]}</button>)}
     </section>
