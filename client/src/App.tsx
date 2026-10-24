@@ -12,6 +12,7 @@ import ApproachPage from "./pages/ApproachPage";
 import InsightsPage from "./pages/InsightsPage";
 import InsightDetailPage from "./pages/InsightDetailPage";
 import ContactPage from "./pages/ContactPage";
+import FaqPage from "./pages/FaqPage";
 
 function Router() {
   return <Switch>
@@ -21,6 +22,7 @@ function Router() {
     <Route path="/approach" component={ApproachPage} />
     <Route path="/insights" component={InsightsPage} />
     <Route path="/insights/:slug" component={InsightDetailPage} />
+    <Route path="/faq" component={FaqPage} />
     <Route path="/contact" component={ContactPage} />
     <Route path="/404" component={NotFound} />
     <Route component={NotFound} />

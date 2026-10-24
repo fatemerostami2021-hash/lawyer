@@ -1,0 +1,16 @@
+{
+  "palette": { "gold": "#d9b45b", "goldLight": "#f4d487", "goldDeep": "#8a6a27", "ivory": "#efe4cc", "marble": "#10131a", "glass": "#f4d487" },
+  "particles": { "count": 900, "size": 0.035, "opacity": 0.7 },
+  "camera": { "fov": 34, "position": [0, 1.6, 14], "look": [0, 0.4, 0] },
+  "mouse": { "tilt": 0.32, "parallax": 1.1, "beam": 0.16 },
+  "routes": {
+    "/": { "x": 3.0, "y": -0.6, "scale": 1.0, "rotY": -0.35 },
+    "/about": { "x": -3.3, "y": -0.7, "scale": 0.78, "rotY": 0.4 },
+    "/expertise": { "x": 3.4, "y": -0.7, "scale": 0.72, "rotY": -0.5 },
+    "/approach": { "x": -3.4, "y": -0.7, "scale": 0.72, "rotY": 0.5 },
+    "/insights": { "x": 3.6, "y": -0.8, "scale": 0.66, "rotY": -0.4 },
+    "/faq": { "x": -3.5, "y": -0.8, "scale": 0.66, "rotY": 0.4 },
+    "/contact": { "x": 3.4, "y": -0.7, "scale": 0.7, "rotY": -0.3 },
+    "default": { "x": 3.4, "y": -0.8, "scale": 0.62, "rotY": -0.3 }
+  }
+}
