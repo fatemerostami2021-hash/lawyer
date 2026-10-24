@@ -1,0 +1,12 @@
+{
+  "routes": [
+    { "path": "/", "title": "SOBHAN NIKSERESHT LAW" },
+    { "path": "/about", "title": "About — SOBHAN NIKSERESHT LAW" },
+    { "path": "/expertise", "title": "Expertise — SOBHAN NIKSERESHT LAW" },
+    { "path": "/approach", "title": "Approach — SOBHAN NIKSERESHT LAW" },
+    { "path": "/insights", "title": "Insights — SOBHAN NIKSERESHT LAW" },
+    { "path": "/insights/:slug", "title": "Insight — SOBHAN NIKSERESHT LAW" },
+    { "path": "/contact", "title": "Contact — SOBHAN NIKSERESHT LAW" },
+    { "path": "/404", "title": "Page not found — SOBHAN NIKSERESHT LAW" }
+  ]
+}
