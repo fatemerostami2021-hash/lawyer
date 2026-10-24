@@ -2,5 +2,6 @@
   "buildCommand": "pnpm install --frozen-lockfile && pnpm build:static",
   "outputDirectory": "dist/public",
   "framework": "vite",
-  "installCommand": "corepack enable && pnpm install --frozen-lockfile"
+  "installCommand": "corepack enable && pnpm install --frozen-lockfile",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
