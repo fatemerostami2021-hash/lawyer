@@ -1,0 +1,36 @@
+/* ===== upgrade4: doctor hero — photo | text | 3D aligned on desktop; photo + 3D side by side on tablet/mobile ===== */
+.doctor-first { width: min(1360px, 94vw) !important; display: grid !important; grid-template-columns: minmax(300px, .95fr) minmax(0, 1.25fr) minmax(280px, .85fr) !important; grid-template-areas: "photo copy stage" !important; gap: clamp(24px, 3vw, 48px) !important; align-items: start !important; min-height: 0 !important; padding-top: clamp(24px, 3vw, 44px) !important; }
+.doctor-first .doctor-photo { grid-area: photo; align-self: start; position: sticky; top: calc(var(--header-h, 84px) + 18px); z-index: 2; }
+.doctor-first .doctor-photo .image-frame { aspect-ratio: auto !important; max-height: none !important; height: min(600px, calc(100svh - var(--header-h, 84px) - 60px)); min-height: 420px; }
+.doctor-first .doctor-photo img { object-fit: cover; object-position: 50% 22%; }
+.doctor-first .doctor-copy { grid-area: copy; display: block !important; position: relative; z-index: 2; align-self: start; }
+.doctor-first .hero-slot { display: none !important; }
+
+/* 3D scales: its own framed panel, same height as the photo */
+.doctor-first .hero-stage { grid-area: stage; position: sticky !important; top: calc(var(--header-h, 84px) + 18px); inset: auto !important; left: auto !important; transform: none !important; width: 100% !important; height: min(600px, calc(100svh - var(--header-h, 84px) - 60px)); min-height: 420px; overflow: hidden; z-index: 1; pointer-events: none;
+  border: 1px solid var(--gold-deep); background: radial-gradient(circle at 50% 28%, rgba(244,212,135,.16), rgba(10,20,48,.92) 68%); }
+.doctor-first .hero-stage .cosmic-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* all of the text is shown (no clamping) */
+.doctor-first .doctor-more p { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; }
+.doctor-first .doctor-more ul { display: grid !important; }
+
+/* Tablet + mobile: photo and 3D side by side on top, text underneath */
+@media (max-width: 1100px) {
+  .doctor-first { width: min(100% - 28px, 1180px) !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; grid-template-areas: "photo stage" "copy copy" !important; gap: 14px !important; padding-top: 18px !important; padding-bottom: 36px !important; }
+  .doctor-first .doctor-photo, .doctor-first .hero-stage { position: relative !important; top: auto; }
+  .doctor-first .doctor-photo .image-frame, .doctor-first .hero-stage { height: clamp(230px, 52vw, 420px); min-height: 0; }
+  .doctor-first .doctor-photo .image-frame { max-height: none !important; }
+  .doctor-first .doctor-head, .doctor-first .doctor-more { grid-area: auto !important; }
+  .doctor-first .doctor-copy { padding-top: 6px; }
+  .doctor-first .doctor-head { margin-bottom: 8px; }
+  .doctor-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .doctor-first { gap: 10px !important; }
+  .doctor-first .doctor-photo .image-frame, .doctor-first .hero-stage { height: clamp(210px, 62vw, 300px); }
+  .doctor-first .doctor-photo .corner { width: 34px; height: 34px; }
+  .doctor-facts { grid-template-columns: 1fr; }
+  .doctor-more p { font-size: 15px !important; }
+  .doctor-more .doctor-lead { font-size: 16px !important; }
+}

@@ -9,6 +9,8 @@ import { startLogin } from "./const";
 import "./index.css";
 import "./upgrade.css";
 import "./upgrade2.css";
+import "./upgrade3.css";
+import "./upgrade4.css";
 
 const queryClient = new QueryClient();
 

@@ -144,10 +144,10 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: 
       const centred = narrow && !poseOverride.current;
       rig.position.set(centred ? 0 : pose.x * fl, centred ? pose.y + 0.15 : pose.y, 0);
       rig.scale.setScalar(centred ? pose.scale * 1.15 : pose.scale);
-      rig.rotation.y = pose.rotY * fl + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * 0.08;
+      rig.rotation.y = pose.rotY * fl + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * (poseOverride.current ? 0.3 : 0.08);
       rig.rotation.x = mouse.y * config.mouse.tilt * 0.5;
       // beam leans with the mouse; pans stay level like a real balance
-      const lean = THREE.MathUtils.clamp(mouse.x * config.mouse.beam + Math.sin(t * 0.8) * 0.035, -0.22, 0.22);
+      const lean = THREE.MathUtils.clamp(mouse.x * config.mouse.beam + Math.sin(t * 0.8) * (poseOverride.current ? 0.09 : 0.035), -0.22, 0.22);
       beam.rotation.z = lean; pans.forEach((p, i) => { p.rotation.z = -lean; p.position.y = -2.0 + (i === 0 ? 1 : -1) * Math.sin(lean) * 0.0; p.rotation.x = Math.sin(t * 1.1 + i) * 0.02; });
       rings.forEach((r, i) => { r.rotation.z = t * (0.04 + i * 0.02) * (i % 2 ? -1 : 1); });
       panels.forEach((p, i) => { p.position.y = 0.4 + Math.sin(t * 0.5 + i * 2) * 0.12; });

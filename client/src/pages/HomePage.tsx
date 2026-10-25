@@ -8,7 +8,7 @@ import { TeamSection } from "@/components/TeamSection";
 import ClickCard from "@/components/ClickCard";
 import InsightCard from "@/components/InsightCard";
 import { Carousel, FadeSlider, type Slide } from "@/components/Slider";
-import { DETAILS, DOCTOR, HOME_UI, QUOTES, SITUATIONS, STEPS } from "@/content/home";
+import { DETAILS, DOCTOR, DOCTOR_MORE, HOME_UI, QUOTES, SITUATIONS, STEPS } from "@/content/home";
 import { GALLERY, X, photoUrl } from "@/content/ui2";
 
 const CosmicScene = lazy(() => import("@/components/CosmicScene"));
@@ -43,7 +43,7 @@ export default function HomePage() {
   return <main className="route-page home-page">
     {/* 1 — Doctor first: photo + text + 3D scales in one screen (also on mobile) */}
     <section className="doctor-section doctor-first page-width">
-      <div className="hero-stage" aria-hidden="true"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
+      <div className="hero-stage" aria-hidden="true"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} pose={{ x: 0, y: -0.55, scale: 0.82, rotY: -0.3 }} /></Suspense></div>
       <DoctorPhoto />
       <div className="doctor-copy">
         <div className="doctor-head">
@@ -52,8 +52,11 @@ export default function HomePage() {
           <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
         </div>
         <div className="doctor-more">
-          <p>{DOCTOR.bio[locale]}</p>
+          <p className="doctor-lead">{DOCTOR.bio[locale]}</p>
+          {DOCTOR_MORE.about[locale].map((para, i) => <p key={i}>{para}</p>)}
           <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
+          <dl className="doctor-facts">{DOCTOR_MORE.facts.map((f, i) => <div key={i}><dt>{f.k[locale]}</dt><dd>{f.v[locale]}</dd></div>)}</dl>
+          <div className="doctor-focus"><span>{DOCTOR_MORE.focus[locale]}</span>{AREAS.map(a => <Link key={a.id} href={`/expertise#${a.id}`}>{a.title[locale]}</Link>)}</div>
           <div className="doctor-actions">
             <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
             <Link className="button button-ghost" href="/contact">{t("consult")}</Link>

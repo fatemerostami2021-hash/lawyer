@@ -100,12 +100,18 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
                       <button type="button" className="mega-link" onClick={() => openSearch()}><span>03</span><strong>{t("search")}</strong><small>{t("searchPh")}</small></button>
                       <Link href="/contact" className="mega-link"><span>04</span><strong>{t("consult")}</strong><small>{t("disclaimer")}</small></Link>
                     </div>
+                    <div className="mega-posts">{insights.map(p => <Link key={p.slug} href={`/insights/${p.slug}`}>{loc(p, locale).title}</Link>)}</div>
                   </>
                 )}
               </div>
             </div>
           )}
-          {menuOpen && <div className="mobile-panel"><Link href="/">{t("home")}</Link><Link href="/about">{t("about")}</Link><Link href="/expertise">{t("expertise")}</Link><Link href="/approach">{t("approach")}</Link><Link href="/insights">{t("blog")}</Link><Link href="/faq">{t("faq")}</Link><Link href="/contact">{t("contact")}</Link><button type="button" onClick={() => openSearch()}>{t("search")}</button></div>}
+          {menuOpen && <div className="mobile-panel">
+            <Link href="/">{t("home")}</Link><Link href="/expertise">{t("expertise")}</Link><Link href="/approach">{t("approach")}</Link><Link href="/insights">{t("blog")}</Link><Link href="/faq">{t("faq")}</Link><Link href="/about">{t("about")}</Link><Link href="/contact">{t("contact")}</Link>
+            <button type="button" onClick={() => { setMenuOpen(false); openSearch(); }}><Search size={16} /> {t("search")}</button>
+            <div className="mobile-langs">{languageOptions.map(o => <button key={o.id} type="button" className={locale === o.id ? "active" : ""} onClick={() => setLocale(o.id)} aria-label={o.label}><Flag code={o.id} /><span>{o.label}</span></button>)}</div>
+            <Link className="button button-gold mobile-cta" href="/contact">{t("consult")}</Link>
+          </div>}
         </header>
         <div className="route-layer">{children}</div>
         <footer className="site-footer dynamic-footer">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Instagram, Linkedin, MessageCircle, Send, X, Headset } from "lucide-react";
 import { FAQS, UI, searchAll, type Locale } from "@/lib/i18n";
 import { insights } from "@/content/legalContent";
@@ -46,7 +47,7 @@ export default function ChatHub({ locale }: { locale: Locale }) {
   const submit = () => { const v = text.trim(); if (!v) return; setText(""); ask(v); };
   const cur = ICONS[i];
 
-  return (
+  return createPortal(
     <div className="chat-hub">
       {open && (
         <div className="chat-panel" role="dialog" aria-label={UI.chatTitle[locale]}>
@@ -70,6 +71,7 @@ export default function ChatHub({ locale }: { locale: Locale }) {
         {open ? <X size={24} /> : <span key={cur.id} className="fab-icon"><cur.Icon size={26} /></span>}
         <span className="chat-dot" />
       </button>
-    </div>
+    </div>,
+    document.body
   );
 }

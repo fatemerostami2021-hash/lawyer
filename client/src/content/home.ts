@@ -58,3 +58,17 @@ export const HOME_UI = {
   prev: { en: "Previous", fa: "قبلی", ar: "السابق" } as L3,
   next: { en: "Next", fa: "بعدی", ar: "التالي" } as L3,
 };
+
+export const DOCTOR_MORE = {
+  about: {
+    en: ["Dr. Sobhan Nikseresht advises companies, founders and international clients on how Iranian corporate and commercial law applies to their real decisions — from the first shareholder agreement to the last arbitration clause.", "The practice is built on plain language. Every matter starts with a written summary of the objective, the risks and the route, so clients always know where they stand and what comes next.", "Work is delivered in Persian, English and Arabic, and is confidential from the first message."],
+    fa: ["دکتر سبحان نیک‌سرشت شرکت‌ها، بنیان‌گذاران و موکلان بین‌المللی را درباره‌ی نحوه‌ی اعمال حقوق شرکت‌ها و تجارت ایران بر تصمیم‌های واقعی‌شان راهنمایی می‌کند؛ از نخستین توافق‌نامه‌ی سهامداری تا آخرین شرط داوری.", "این دفتر بر زبان ساده بنا شده است. هر پرونده با یک خلاصه‌ی مکتوب از هدف، ریسک‌ها و مسیر آغاز می‌شود تا موکل همیشه بداند در چه موقعیتی است و گام بعدی چیست.", "کار به فارسی، انگلیسی و عربی ارائه می‌شود و از اولین پیام محرمانه است."],
+    ar: ["يقدّم الدكتور سبحان نيك سرشت المشورة للشركات والمؤسسين والعملاء الدوليين حول كيفية تطبيق قانون الشركات والتجارة الإيراني على قراراتهم الفعلية، من أول اتفاق مساهمين إلى آخر بند تحكيم.", "يقوم المكتب على اللغة البسيطة. تبدأ كل قضية بملخص مكتوب للهدف والمخاطر والمسار، ليعرف العميل دائماً أين يقف وما الخطوة التالية.", "يُنجَز العمل بالفارسية والإنجليزية والعربية، وهو سري منذ أول رسالة."],
+  } as Record<Locale, string[]>,
+  focus: { en: "Areas of focus", fa: "حوزه‌های فعالیت", ar: "مجالات العمل" } as L3,
+  facts: [
+    { k: { en: "Practice", fa: "حوزه‌ی کار", ar: "المجال" } as L3, v: { en: "Corporate & commercial law", fa: "حقوق شرکت‌ها و تجارت", ar: "قانون الشركات والتجارة" } as L3 },
+    { k: { en: "Languages", fa: "زبان‌ها", ar: "اللغات" } as L3, v: { en: "Persian · English · Arabic", fa: "فارسی · انگلیسی · عربی", ar: "الفارسية · الإنجليزية · العربية" } as L3 },
+    { k: { en: "Way of working", fa: "شیوه‌ی کار", ar: "أسلوب العمل" } as L3, v: { en: "Written scope, clear next steps", fa: "دامنه‌ی مکتوب، گام‌های روشن", ar: "نطاق مكتوب وخطوات واضحة" } as L3 },
+  ],
+};
