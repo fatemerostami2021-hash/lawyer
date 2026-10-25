@@ -134,6 +134,7 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Prop
     const tick = () => {
       if (disposed) return; frame = requestAnimationFrame(tick);
       if (document.hidden) return;
+      const hb = host.getBoundingClientRect(); if (hb.bottom < 0 || hb.top > window.innerHeight) return;
       const t = clock.getElapsedTime();
       mouse.x += (mouse.tx - mouse.x) * 0.06; mouse.y += (mouse.ty - mouse.y) * 0.06; scroll += (scrollT - scroll) * 0.05;
       const narrow = rig.userData.narrow as boolean;

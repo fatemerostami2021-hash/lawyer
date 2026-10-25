@@ -1,4 +1,4 @@
-import { createContext, lazy, Suspense, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, ChevronDown, Instagram, Linkedin, Mail, Menu, MessageCircle, Search, Send, X } from "lucide-react";
 import gsap from "gsap";
@@ -12,7 +12,6 @@ import { AREAS, UI, type Locale } from "@/lib/i18n";
 import { insights } from "@/content/legalContent";
 import { SITE } from "@/lib/site";
 
-const CosmicScene = lazy(() => import("./CosmicScene"));
 
 type LanguageContextValue = { locale: Locale; setLocale: (locale: Locale) => void; openSearch: (q?: string) => void };
 const LanguageContext = createContext<LanguageContextValue>({ locale: "en", setLocale: () => undefined, openSearch: () => undefined });
@@ -50,7 +49,6 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <LanguageContext.Provider value={{ locale, setLocale, openSearch }}>
       <div className={`site-shell dynamic-shell${location === "/" ? " is-home" : ""}`} dir={direction}>
-        {location === "/" && <div className="cosmic-background"><Suspense fallback={<div className="webgl-fallback" />}><CosmicScene route={location} dir={direction} opacity={1} /></Suspense></div>}
         <header className="site-header dynamic-header" onMouseLeave={() => setMega(null)}>
           <div className="header-inner page-width">
             <Brand locale={locale} />

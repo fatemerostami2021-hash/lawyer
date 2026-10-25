@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, FileText, Gavel, Globe, Scale, Search, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage } from "@/components/SiteChrome";
@@ -7,6 +7,7 @@ import { insights } from "@/content/legalContent";
 import { TeamSection } from "@/components/TeamSection";
 import { DETAILS, DOCTOR, HOME_UI, QUOTES, SITUATIONS, STEPS } from "@/content/home";
 
+const CosmicScene = lazy(() => import("@/components/CosmicScene"));
 const ICONS: Record<string, typeof Scale> = { corporate: Scale, contracts: FileText, "market-entry": Globe, disputes: Gavel, ip: ShieldCheck };
 
 function DoctorPhoto() {
@@ -35,7 +36,20 @@ export default function HomePage() {
   const sitArea = AREAS.find(a => a.id === sit.area)!;
 
   return <main className="route-page home-page">
+    <section className="doctor-section doctor-first page-width">
+      <DoctorPhoto />
+      <div className="doctor-copy">
+        <span className="section-kicker">{HOME_UI.doctorKicker[locale]}</span>
+        <h2>{DOCTOR.name[locale]}</h2>
+        <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
+        <p>{DOCTOR.bio[locale]}</p>
+        <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
+        <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
+      </div>
+    </section>
+
     <section className="home-hero page-width">
+      <div className="hero-stage"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
       <div className="home-hero-copy reveal is-visible">
         <span className="eyebrow">{t("heroKicker")}</span>
         <h1>{t("heroTitle")}</h1>
@@ -73,18 +87,6 @@ export default function HomePage() {
         </article>); })}
     </section>
 
-    <section className="doctor-section page-width">
-      <DoctorPhoto />
-      <div className="doctor-copy">
-        <span className="section-kicker">{HOME_UI.doctorKicker[locale]}</span>
-        <h2>{DOCTOR.name[locale]}</h2>
-        <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
-        <p>{DOCTOR.bio[locale]}</p>
-        <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
-        <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
-      </div>
-    </section>
-
     <TeamSection />
 
     <section className="steps-section page-width">
@@ -108,6 +110,6 @@ export default function HomePage() {
       <div className="area-grid">{insights.slice(0, 3).map(p => <Link key={p.slug} href={`/insights/${p.slug}`} className="insight-card"><span className="area-no">{p.accent}</span><h3>{locale === "fa" ? p.titleFa : p.title}</h3><p>{p.deck}</p><ArrowUpRight size={18} /></Link>)}</div>
     </section>
 
-    <section className="closing-panel page-width"><h2>{t("ctaTitle")}</h2><Link className="button button-gold" href="/contact">{t("consult")}<ArrowUpRight size={15} /></Link></section>
+    <section className="closing-panel page-width"><h2>{t("ctaTitle")}</h2><p className="closing-sub">{t("ctaSub")}</p><Link className="button button-gold" href="/contact">{t("consult")}<ArrowUpRight size={15} /></Link></section>
   </main>;
 }
