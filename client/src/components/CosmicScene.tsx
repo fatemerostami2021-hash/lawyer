@@ -4,7 +4,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import gsap from "gsap";
 import config from "@/content/scene.config.json";
 
-type Props = { route: string; dir?: "ltr" | "rtl"; opacity?: number };
+type Props = { route: string; dir?: "ltr" | "rtl"; opacity?: number; pose?: Pose };
 type Pose = { x: number; y: number; scale: number; rotY: number };
 const poseFor = (route: string): Pose => {
   const r = config.routes as Record<string, Pose>;
@@ -20,14 +20,15 @@ const tube = (a: THREE.Vector3, b: THREE.Vector3, r: number, mat: THREE.Material
   return m;
 };
 
-export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Props) {
+export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: poseProp }: Props) {
+  const poseOverride = useRef(poseProp);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const routeRef = useRef(route);
   const flipRef = useRef(dir === "rtl" ? -1 : 1);
   useEffect(() => { flipRef.current = dir === "rtl" ? -1 : 1; }, [dir]);
   const apiRef = useRef<{ goTo: (p: Pose) => void } | null>(null);
 
-  useEffect(() => { routeRef.current = route; apiRef.current?.goTo(poseFor(route)); }, [route]);
+  useEffect(() => { routeRef.current = route; apiRef.current?.goTo(poseOverride.current ?? poseFor(route)); }, [route]);
 
   useEffect(() => {
     const canvas = canvasRef.current; const host = canvas?.parentElement;
@@ -114,7 +115,7 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Prop
     // ---- motion state ----
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     let scroll = 0, scrollT = 0;
-    const pose = { ...poseFor(routeRef.current) };
+    const pose = { ...(poseOverride.current ?? poseFor(routeRef.current)) };
     rig.position.set(pose.x * flipRef.current, pose.y, 0); rig.scale.setScalar(pose.scale); rig.rotation.y = pose.rotY * flipRef.current;
     apiRef.current = { goTo: p => gsap.to(pose, { ...p, duration: 1.6, ease: "power3.inOut" }) };
 
@@ -126,7 +127,7 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Prop
     const resize = () => {
       const w = host.clientWidth || window.innerWidth, h = host.clientHeight || window.innerHeight;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-      const narrow = w < 760; rig.userData.narrow = narrow;
+      const narrow = w <= 900; rig.userData.narrow = narrow;
     };
     resize(); window.addEventListener("resize", resize);
 
@@ -140,8 +141,9 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95 }: Prop
       const narrow = rig.userData.narrow as boolean;
 
       const fl = flipRef.current;
-      rig.position.set(narrow ? 0 : pose.x * fl, narrow ? pose.y + 0.4 : pose.y, 0);
-      rig.scale.setScalar(narrow ? pose.scale * 0.8 : pose.scale);
+      const centred = narrow && !poseOverride.current;
+      rig.position.set(centred ? 0 : pose.x * fl, centred ? pose.y + 0.15 : pose.y, 0);
+      rig.scale.setScalar(centred ? pose.scale * 1.15 : pose.scale);
       rig.rotation.y = pose.rotY * fl + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * 0.08;
       rig.rotation.x = mouse.y * config.mouse.tilt * 0.5;
       // beam leans with the mouse; pans stay level like a real balance

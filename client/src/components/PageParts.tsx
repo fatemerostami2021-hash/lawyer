@@ -1,18 +1,40 @@
-import type { ReactNode } from "react";
-import { Link } from "wouter";
+import { lazy, Suspense, type ReactNode } from "react";
+import { Link, useLocation } from "wouter";
 import { ArrowDownRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import { useLanguage } from "./SiteChrome";
+import { X } from "@/content/ui2";
 
-export function PageIntro({ index, kicker, title, children, image }: { index: string; kicker: string; title: string; children?: ReactNode; image?: "office" | "themis" | "gold-scales" | "meeting" }) {
+const CosmicScene = lazy(() => import("./CosmicScene"));
+type Img = "office" | "themis" | "gold-scales" | "meeting";
+
+const ROT: Record<string, number> = { "/about": 0.35, "/expertise": -0.35, "/approach": 0.3, "/insights": -0.3, "/faq": 0.35, "/contact": -0.25 };
+
+/** Photo frame with the 3D scales floating in front of it — used on every inner page. */
+export function HeroVisual({ image, compact = false }: { image?: Img; compact?: boolean }) {
+  const { locale } = useLanguage(); const [path] = useLocation();
+  const key = "/" + (path.split("/")[1] ?? "");
+  const pose = { x: 0, y: -0.45, scale: compact ? 0.62 : 0.8, rotY: ROT[key] ?? -0.3 };
   return (
-    <section className={`page-intro page-width page-hero${image ? " has-image" : ""}`}>
+    <figure className={`page-hero-photo hero-visual${compact ? " compact" : ""}`} data-tilt>
+      <div className="image-frame mm-layer" data-depth="8">
+        {image && <img className="hv-bg" src={`/assets/photos/${image}.webp`} alt="" loading="eager" />}
+        <div className="hv-stage"><Suspense fallback={null}><CosmicScene route={path} pose={pose} dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
+      </div>
+      <span className="corner tl" /><span className="corner br" />
+    </figure>
+  );
+}
+
+export function PageIntro({ index, kicker, title, children, image }: { index: string; kicker: string; title: string; children?: ReactNode; image?: Img }) {
+  return (
+    <section className="page-intro page-width page-hero has-image">
       <div className="page-hero-text">
         <div className="page-index"><span>{index}</span><i /></div>
         <span className="section-kicker">{kicker}</span>
         <h1>{title}</h1>
         {children && <p>{children}</p>}
       </div>
-      {image && <figure className="page-hero-photo" data-tilt><div className="image-frame mm-layer" data-depth="8"><img src={`/assets/photos/${image}.webp`} alt="" loading="eager" /></div><span className="corner tl" /><span className="corner br" /></figure>}
+      <HeroVisual image={image} />
     </section>
   );
 }
@@ -21,7 +43,7 @@ export function Reveal({ children, className = "" }: { children: ReactNode; clas
 
 export function GoldLink({ href, children }: { href: string; children: ReactNode }) { return <Link className="gold-link" href={href}>{children}<ArrowUpRight size={16} /></Link>; }
 
-export function BackToInsights() { return <Link className="back-link" href="/insights"><ArrowDownRight size={15} /> Back to insights</Link>; }
+export function BackToInsights() { const { locale } = useLanguage(); return <Link className="back-link" href="/insights"><ArrowDownRight size={15} /> {X.backToInsights[locale]}</Link>; }
 
 export function LanguageNote() {
   const { locale } = useLanguage();

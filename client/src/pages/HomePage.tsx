@@ -5,7 +5,11 @@ import { useLanguage } from "@/components/SiteChrome";
 import { AREAS, FAQS, UI } from "@/lib/i18n";
 import { insights } from "@/content/legalContent";
 import { TeamSection } from "@/components/TeamSection";
+import ClickCard from "@/components/ClickCard";
+import InsightCard from "@/components/InsightCard";
+import { Carousel, FadeSlider, type Slide } from "@/components/Slider";
 import { DETAILS, DOCTOR, HOME_UI, QUOTES, SITUATIONS, STEPS } from "@/content/home";
+import { GALLERY, X, photoUrl } from "@/content/ui2";
 
 const CosmicScene = lazy(() => import("@/components/CosmicScene"));
 const ICONS: Record<string, typeof Scale> = { corporate: Scale, contracts: FileText, "market-entry": Globe, disputes: Gavel, ip: ShieldCheck };
@@ -34,29 +38,41 @@ export default function HomePage() {
   const quote = QUOTES[qi];
   const sit = SITUATIONS[pick];
   const sitArea = AREAS.find(a => a.id === sit.area)!;
+  const gallery: Slide[] = GALLERY.map(g => ({ img: `/assets/photos/${g.img}.webp`, title: g.cap[locale], text: g.sub[locale], href: g.href, cta: X.discover[locale] }));
 
   return <main className="route-page home-page">
+    {/* 1 — Doctor first: photo + text + 3D scales in one screen (also on mobile) */}
     <section className="doctor-section doctor-first page-width">
+      <div className="hero-stage" aria-hidden="true"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
       <DoctorPhoto />
       <div className="doctor-copy">
-        <span className="section-kicker">{HOME_UI.doctorKicker[locale]}</span>
-        <h2>{DOCTOR.name[locale]}</h2>
-        <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
-        <p>{DOCTOR.bio[locale]}</p>
-        <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
-        <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
+        <div className="doctor-head">
+          <span className="section-kicker">{HOME_UI.doctorKicker[locale]}</span>
+          <h2>{DOCTOR.name[locale]}</h2>
+          <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
+        </div>
+        <div className="doctor-more">
+          <p>{DOCTOR.bio[locale]}</p>
+          <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
+          <div className="doctor-actions">
+            <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
+            <Link className="button button-ghost" href="/contact">{t("consult")}</Link>
+          </div>
+        </div>
       </div>
+      <div className="hero-slot" aria-hidden="true" />
     </section>
 
-    <section className="home-hero page-width">
-      <div className="hero-stage"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
-      <div className="home-hero-copy reveal is-visible">
-        <span className="eyebrow">{t("heroKicker")}</span>
-        <h1>{t("heroTitle")}</h1>
-        <p>{t("heroSub")}</p>
-        <form className="hero-search" onSubmit={e => { e.preventDefault(); openSearch(q); }}><Search size={18} /><input value={q} onChange={e => setQ(e.target.value)} placeholder={t("searchPh")} /><button type="submit" className="button button-gold">{t("search")}</button></form>
-        <div className="hero-chips">{chips.map(c => <button key={c} type="button" onClick={() => openSearch(c)}>{c}</button>)}</div>
-      </div>
+    {/* 2 — Photo slider */}
+    <section className="gallery-section page-width"><FadeSlider slides={gallery} autoplay={5500} className="gallery-slider" /></section>
+
+    {/* 3 — Search */}
+    <section className="search-hero page-width">
+      <span className="eyebrow">{t("heroKicker")}</span>
+      <h1>{t("heroTitle")}</h1>
+      <p>{t("heroSub")}</p>
+      <form className="hero-search" onSubmit={e => { e.preventDefault(); openSearch(q); }}><Search size={18} /><input value={q} onChange={e => setQ(e.target.value)} placeholder={t("searchPh")} /><button type="submit" className="button button-gold">{t("search")}</button></form>
+      <div className="hero-chips">{chips.map(c => <button key={c} type="button" onClick={() => openSearch(c)}>{c}</button>)}</div>
     </section>
 
     <section className="pick-section page-width">
@@ -67,31 +83,34 @@ export default function HomePage() {
           <small>{HOME_UI.firstStep[locale]}</small>
           <h3>{sitArea.title[locale]}</h3>
           <p>{sit.first[locale]}</p>
-          <div className="pick-actions"><Link className="button button-gold" href="/contact">{t("consult")}<ArrowUpRight size={15} /></Link><button type="button" className="button button-ghost" onClick={() => openSearch(sitArea.title[locale])}>{t("search")}</button></div>
+          <div className="pick-actions"><Link className="button button-gold" href="/contact">{t("consult")}<ArrowUpRight size={15} /></Link><Link className="button button-ghost" href={`/expertise#${sitArea.id}`}>{t("readMore")}</Link><button type="button" className="button button-ghost" onClick={() => openSearch(sitArea.title[locale])}>{t("search")}</button></div>
         </div>
       </div>
     </section>
 
+    {/* 4 — Services slider */}
     <section className="services-section page-width">
       <div className="section-heading"><span className="section-kicker">02</span><h2>{HOME_UI.servicesTitle[locale]}</h2></div>
-      {AREAS.map((a, n) => { const Icon = ICONS[a.id]; const d = DETAILS[a.id]; return (
-        <article key={a.id} className={`service-row ${n % 2 ? "flip" : ""}`}>
-          <div className="service-icon" data-tilt><Icon size={64} strokeWidth={1.2} /><span className="area-no">{String(n + 1).padStart(2, "0")}</span></div>
-          <div className="service-copy">
-            <h3>{a.title[locale]}</h3>
-            <p>{a.body[locale]}</p>
-            <ul>{d.bullets[locale].map(b => <li key={b}>{b}</li>)}</ul>
-            <blockquote><strong>{HOME_UI.example[locale]}:</strong> {d.example[locale]}</blockquote>
-            <Link className="gold-link" href="/expertise">{t("readMore")}<ArrowUpRight size={16} /></Link>
-          </div>
-        </article>); })}
+      <Carousel perView={{ base: 1, md: 2, lg: 3 }} gap={22} autoplay={6500}>
+        {AREAS.map((a, n) => { const Icon = ICONS[a.id]; const d = DETAILS[a.id]; return (
+          <ClickCard key={a.id} href={`/expertise#${a.id}`} className="service-card" tilt>
+            <div className="sc-img"><img src={photoUrl(n)} alt="" loading="lazy" /><span className="sc-icon"><Icon size={26} strokeWidth={1.3} /></span><span className="area-no">{String(n + 1).padStart(2, "0")}</span></div>
+            <div className="sc-body">
+              <h3>{a.title[locale]}</h3>
+              <p>{a.body[locale]}</p>
+              <ul>{d.bullets[locale].map(b => <li key={b}>{b}</li>)}</ul>
+              <blockquote><strong>{HOME_UI.example[locale]}:</strong> {d.example[locale]}</blockquote>
+              <Link className="gold-link" href={`/expertise#${a.id}`}>{t("readMore")}<ArrowUpRight size={16} /></Link>
+            </div>
+          </ClickCard>); })}
+      </Carousel>
     </section>
 
     <TeamSection />
 
     <section className="steps-section page-width">
       <div className="section-heading"><span className="section-kicker">03</span><h2>{HOME_UI.stepsTitle[locale]}</h2></div>
-      <div className="steps-grid">{STEPS.map((s, n) => <div key={n} className="step-card" data-tilt><span className="area-no">{String(n + 1).padStart(2, "0")}</span><h3>{s.t[locale]}</h3><p>{s.d[locale]}</p></div>)}</div>
+      <div className="steps-grid">{STEPS.map((s, n) => <ClickCard key={n} href="/contact" className="step-card" tilt><span className="area-no">{String(n + 1).padStart(2, "0")}</span><h3>{s.t[locale]}</h3><p>{s.d[locale]}</p></ClickCard>)}</div>
     </section>
 
     <section className="wisdom-section page-width">
@@ -105,9 +124,12 @@ export default function HomePage() {
       <div className="faq-list">{FAQS.slice(0, 4).map(f => <Link key={f.id} href={`/faq#${f.id}`} className="faq-item"><strong>{f.q[locale]}</strong><ArrowUpRight size={16} /></Link>)}</div>
     </section>
 
+    {/* Blog slider */}
     <section className="blog-teaser page-width">
-      <div className="section-heading"><span className="section-kicker">{t("blog")}</span><h2>{t("latestBlog")}</h2></div>
-      <div className="area-grid">{insights.slice(0, 3).map(p => <Link key={p.slug} href={`/insights/${p.slug}`} className="insight-card"><span className="area-no">{p.accent}</span><h3>{locale === "fa" ? p.titleFa : p.title}</h3><p>{p.deck}</p><ArrowUpRight size={18} /></Link>)}</div>
+      <div className="section-heading"><span className="section-kicker">{t("blog")}</span><h2>{t("latestBlog")}</h2><Link className="gold-link" href="/insights">{X.allArticles[locale]}<ArrowUpRight size={16} /></Link></div>
+      <Carousel perView={{ base: 1, md: 2, lg: 3 }} gap={22} autoplay={7000}>
+        {insights.map((p, n) => <InsightCard key={p.slug} p={p} locale={locale} n={n} />)}
+      </Carousel>
     </section>
 
     <section className="closing-panel page-width"><h2>{t("ctaTitle")}</h2><p className="closing-sub">{t("ctaSub")}</p><Link className="button button-gold" href="/contact">{t("consult")}<ArrowUpRight size={15} /></Link></section>

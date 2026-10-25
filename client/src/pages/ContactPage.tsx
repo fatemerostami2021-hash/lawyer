@@ -3,6 +3,7 @@ import { ArrowUpRight, Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, 
 import { useLanguage } from "@/components/SiteChrome";
 import { SITE } from "@/lib/site";
 import type { Locale } from "@/lib/i18n";
+import { HeroVisual } from "@/components/PageParts";
 
 const T: Record<string, Record<Locale, string>> = {
   kicker: { en: "Contact", fa: "تماس", ar: "تواصل" },
@@ -43,7 +44,7 @@ export default function ContactPage() {
           </form>}
         </div>
         <aside className="contact-side">
-          <figure className="side-photo"><div className="image-frame"><img src="/assets/photos/office.webp" alt="" loading="eager" /></div></figure>
+          <HeroVisual image="office" compact />
           <div className="contact-info">
             <span className="section-kicker">{t("details")}</span>
             <a href={SITE.phoneHref}><Phone size={18} /><span dir="ltr">{SITE.phoneDisplay}</span></a>

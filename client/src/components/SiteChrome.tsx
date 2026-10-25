@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, ChevronDown, Instagram, Linkedin, Mail, Menu, MessageCircle, Search, Send, X } from "lucide-react";
 import gsap from "gsap";
@@ -10,6 +10,7 @@ import ChatHub from "./ChatHub";
 import MouseMotion from "./MouseMotion";
 import { AREAS, UI, type Locale } from "@/lib/i18n";
 import { insights } from "@/content/legalContent";
+import { loc } from "@/content/insightsI18n";
 import { SITE } from "@/lib/site";
 
 
@@ -29,12 +30,25 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
   const [mega, setMega] = useState<"expertise" | "help" | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQ, setSearchQ] = useState("");
+  const headerRef = useRef<HTMLElement>(null);
   const direction = locale === "en" ? "ltr" : "rtl";
   const t = (k: keyof typeof UI) => UI[k][locale];
 
   const setLocale = (next: Locale) => { setLocaleState(next); localStorage.setItem("snl-locale", next); };
   const openSearch = (q = "") => { setSearchQ(q); setSearchOpen(true); setMega(null); };
 
+  // Measure the header so the first section of every page sits directly under it (no gap, no overlap).
+  useLayoutEffect(() => {
+    const el = headerRef.current; if (!el) return;
+    const set = () => {
+      if (el.querySelector(".mobile-panel")) return;
+      const h = Math.round(el.getBoundingClientRect().height); const pos = getComputedStyle(el).position;
+      const root = document.documentElement.style;
+      root.setProperty("--header-h", `${h}px`); root.setProperty("--header-offset", pos === "fixed" || pos === "absolute" ? `${h}px` : "0px");
+    };
+    set(); const ro = new ResizeObserver(set); ro.observe(el); window.addEventListener("resize", set);
+    return () => { ro.disconnect(); window.removeEventListener("resize", set); };
+  }, []);
   useEffect(() => { document.documentElement.lang = locale; document.documentElement.dir = direction; }, [locale, direction]);
   useEffect(() => {
     setMenuOpen(false); setMega(null);
@@ -49,7 +63,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <LanguageContext.Provider value={{ locale, setLocale, openSearch }}>
       <div className={`site-shell dynamic-shell${location === "/" ? " is-home" : ""}`} dir={direction}>
-        <header className="site-header dynamic-header" onMouseLeave={() => setMega(null)}>
+        <header ref={headerRef} className="site-header dynamic-header" onMouseLeave={() => setMega(null)}>
           <div className="header-inner page-width">
             <Brand locale={locale} />
             <nav className="desktop-nav" aria-label="Primary navigation">
@@ -75,13 +89,13 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
               <div className="page-width mega-inner">
                 {mega === "expertise" ? (
                   <>
-                    <div className="mega-grid">{AREAS.map((a, n) => <Link key={a.id} href="/expertise" className="mega-link"><span>{String(n + 1).padStart(2, "0")}</span><strong>{a.title[locale]}</strong><small>{a.body[locale].slice(0, 72)}…</small></Link>)}</div>
+                    <div className="mega-grid">{AREAS.map((a, n) => <Link key={a.id} href={`/expertise#${a.id}`} className="mega-link"><span>{String(n + 1).padStart(2, "0")}</span><strong>{a.title[locale]}</strong><small>{a.body[locale].slice(0, 72)}…</small></Link>)}</div>
                     <button type="button" className="mega-cta" onClick={() => openSearch()}><Search size={15} />{t("megaCta")}</button>
                   </>
                 ) : (
                   <>
                     <div className="mega-grid mega-help">
-                      <Link href="/insights" className="mega-link"><span>01</span><strong>{t("blog")}</strong><small>{insights[0] ? (locale === "fa" ? insights[0].titleFa : insights[0].title) : ""}</small></Link>
+                      <Link href="/insights" className="mega-link"><span>01</span><strong>{t("blog")}</strong><small>{insights[0] ? loc(insights[0], locale).title : ""}</small></Link>
                       <Link href="/faq" className="mega-link"><span>02</span><strong>{t("faq")}</strong><small>{t("faqTitle")}</small></Link>
                       <button type="button" className="mega-link" onClick={() => openSearch()}><span>03</span><strong>{t("search")}</strong><small>{t("searchPh")}</small></button>
                       <Link href="/contact" className="mega-link"><span>04</span><strong>{t("consult")}</strong><small>{t("disclaimer")}</small></Link>
@@ -98,6 +112,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
           <div className="page-width footer-inner">
             <Brand locale={locale} footer />
             <span className="footer-line">{t("footer")}</span>
+            <nav className="footer-nav" aria-label="Footer navigation"><Link href="/">{t("home")}</Link><Link href="/expertise">{t("expertise")}</Link><Link href="/approach">{t("approach")}</Link><Link href="/insights">{t("blog")}</Link><Link href="/faq">{t("faq")}</Link><Link href="/about">{t("about")}</Link><Link href="/contact">{t("contact")}</Link></nav>
             <div className="footer-contact"><span dir="ltr">{SITE.phoneDisplay}</span><a href={`mailto:${SITE.email}`}><Mail size={13} />{SITE.email}</a><strong>{SITE.address}</strong></div>
             <div className="footer-social"><a href={SITE.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram size={15} /></a><a href={SITE.social.telegram} target="_blank" rel="noreferrer" aria-label="Telegram"><Send size={15} /></a><a href={SITE.social.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle size={15} /></a><a href={SITE.social.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={15} /></a></div>
             <div className="footer-end"><span className="footer-copy">© {new Date().getFullYear()} Sobhan Nikseresht Law</span><a className="designer-link" href={SITE.designerUrl} target="_blank" rel="noreferrer">{t("designer")}<ArrowUpRight size={12} /></a></div>
