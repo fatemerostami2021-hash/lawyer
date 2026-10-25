@@ -49,17 +49,18 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, openSearch }}>
-      <div className="site-shell dynamic-shell" dir={direction}>
-        <div className="cosmic-background"><Suspense fallback={<div className="webgl-fallback" />}><CosmicScene route={location} dir={direction} opacity={location === "/" ? 1 : 0.5} /></Suspense></div>
+      <div className={`site-shell dynamic-shell${location === "/" ? " is-home" : ""}`} dir={direction}>
+        {location === "/" && <div className="cosmic-background"><Suspense fallback={<div className="webgl-fallback" />}><CosmicScene route={location} dir={direction} opacity={1} /></Suspense></div>}
         <header className="site-header dynamic-header" onMouseLeave={() => setMega(null)}>
           <div className="header-inner page-width">
             <Brand locale={locale} />
             <nav className="desktop-nav" aria-label="Primary navigation">
-              {nav("/about", t("about"))}
+              {nav("/", t("home"))}
               <div className="nav-item" onMouseEnter={() => setMega("expertise")}><Link href="/expertise" className={location === "/expertise" ? "active" : ""}><WaveText text={t("expertise")} locale={locale} /><ChevronDown size={12} /></Link></div>
               {nav("/approach", t("approach"))}
               {nav("/insights", t("blog"))}
               <div className="nav-item" onMouseEnter={() => setMega("help")}><button type="button" className="nav-btn"><WaveText text={t("legalHelp")} locale={locale} /><ChevronDown size={12} /></button></div>
+              {nav("/about", t("about"))}
               {nav("/contact", t("contact"))}
             </nav>
             <div className="header-actions">
