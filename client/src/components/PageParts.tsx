@@ -1,24 +1,18 @@
-import { lazy, Suspense, type ReactNode } from "react";
-import { Link, useLocation } from "wouter";
+import type { ReactNode } from "react";
+import { Link } from "wouter";
 import { ArrowDownRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import { useLanguage } from "./SiteChrome";
 import { X } from "@/content/ui2";
 
-const CosmicScene = lazy(() => import("./CosmicScene"));
 type Img = "office" | "themis" | "gold-scales" | "meeting";
 
-const ROT: Record<string, number> = { "/about": 0.35, "/expertise": -0.35, "/approach": 0.3, "/insights": -0.3, "/faq": 0.35, "/contact": -0.25 };
 
-/** Photo frame with the 3D scales floating in front of it — used on every inner page. */
+/** Plain photo frame (the 3D scales live on the page-wide backdrop, glued to the .hero-anchor next to it). */
 export function HeroVisual({ image, compact = false }: { image?: Img; compact?: boolean }) {
-  const { locale } = useLanguage(); const [path] = useLocation();
-  const key = "/" + (path.split("/")[1] ?? "");
-  const pose = { x: 0, y: -0.45, scale: compact ? 0.62 : 0.8, rotY: ROT[key] ?? -0.3 };
   return (
     <figure className={`page-hero-photo hero-visual${compact ? " compact" : ""}`} data-tilt>
       <div className="image-frame mm-layer" data-depth="8">
         {image && <img className="hv-bg" src={`/assets/photos/${image}.webp`} alt="" loading="eager" />}
-        <div className="hv-stage"><Suspense fallback={null}><CosmicScene route={path} pose={pose} dir={locale === "en" ? "ltr" : "rtl"} opacity={1} /></Suspense></div>
       </div>
       <span className="corner tl" /><span className="corner br" />
     </figure>
@@ -34,6 +28,7 @@ export function PageIntro({ index, kicker, title, children, image }: { index: st
         <h1>{title}</h1>
         {children && <p>{children}</p>}
       </div>
+      <div className="hero-anchor" data-scene-anchor aria-hidden="true" />
       <HeroVisual image={image} />
     </section>
   );

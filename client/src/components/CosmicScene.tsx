@@ -4,7 +4,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import gsap from "gsap";
 import config from "@/content/scene.config.json";
 
-type Props = { route: string; dir?: "ltr" | "rtl"; opacity?: number; pose?: Pose };
+type Props = { route: string; dir?: "ltr" | "rtl"; opacity?: number; pose?: Pose; mode?: "backdrop" };
 type Pose = { x: number; y: number; scale: number; rotY: number };
 const poseFor = (route: string): Pose => {
   const r = config.routes as Record<string, Pose>;
@@ -20,7 +20,8 @@ const tube = (a: THREE.Vector3, b: THREE.Vector3, r: number, mat: THREE.Material
   return m;
 };
 
-export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: poseProp }: Props) {
+export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: poseProp, mode }: Props) {
+  const backdrop = mode === "backdrop";
   const poseOverride = useRef(poseProp);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const routeRef = useRef(route);
@@ -131,6 +132,35 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: 
     };
     resize(); window.addEventListener("resize", resize);
 
+    // ---- backdrop mode: the scales are drawn on a fixed full-page canvas and glued to an invisible
+    // [data-scene-anchor] element (so they sit next to the doctor / page title and scroll with it);
+    // when no anchor is on screen they float in the side margins and drift while the page scrolls. ----
+    const vv = new THREE.Vector3(), dd = new THREE.Vector3();
+    const toWorld = (nx: number, ny: number) => { vv.set(nx, ny, 0.5).unproject(camera); dd.copy(vv).sub(camera.position).normalize(); const k = -camera.position.z / dd.z; return new THREE.Vector3().copy(camera.position).addScaledVector(dd, k); };
+    const RIG_W = 7.2, RIG_H = 6.8, RIG_CY = 0.5;
+    const cur = { x: 0, y: 0, s: 0.05, o: 0, init: false };
+    const placeRig = (fl: number) => {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      let cx = vw / 2, cy = vh / 2, bw = 200, bh = 200, op = 0, k = 0.14;
+      const a = document.querySelector("[data-scene-anchor]") as HTMLElement | null;
+      const r = a?.getBoundingClientRect();
+      if (r && r.width > 40 && r.height > 40 && r.bottom > 60 && r.top < vh - 40) {
+        cx = r.left + r.width / 2; cy = r.top + r.height / 2; bw = r.width; bh = r.height; k = 0.28;
+        const vis = (Math.min(r.bottom, vh) - Math.max(r.top, 0)) / r.height; op = Math.min(1, Math.max(0, vis * 1.6));
+      } else {
+        const margin = (vw - Math.min(1360, vw * 0.94)) / 2;
+        if (margin >= 110) { const side = fl === -1 ? -1 : 1; cx = vw / 2 + side * (vw / 2 - margin / 2); cy = vh * (0.5 + 0.28 * Math.sin(scroll * 9)); bw = margin * 0.9; bh = Math.min(vh * 0.5, margin * 1.4); op = 0.9; }
+      }
+      const nx = (px: number) => (px / vw) * 2 - 1, ny = (py: number) => -((py / vh) * 2 - 1);
+      const wW = Math.abs(toWorld(nx(cx + bw / 2), ny(cy)).x - toWorld(nx(cx - bw / 2), ny(cy)).x);
+      const wH = Math.abs(toWorld(nx(cx), ny(cy - bh / 2)).y - toWorld(nx(cx), ny(cy + bh / 2)).y);
+      const sc = Math.max(0.05, Math.min(wW / RIG_W, wH / RIG_H));
+      const c = toWorld(nx(cx), ny(cy));
+      if (!cur.init) { cur.x = c.x; cur.y = c.y - RIG_CY * sc; cur.s = sc; cur.init = true; }
+      cur.x += (c.x - cur.x) * k; cur.y += (c.y - RIG_CY * sc - cur.y) * k; cur.s += (sc - cur.s) * k; cur.o += (op - cur.o) * 0.12;
+      rig.position.set(cur.x, cur.y, 0); rig.scale.setScalar(cur.s); host.style.opacity = String(cur.o);
+    };
+
     const clock = new THREE.Clock(); let frame = 0, disposed = false;
     const tick = () => {
       if (disposed) return; frame = requestAnimationFrame(tick);
@@ -141,9 +171,11 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: 
       const narrow = rig.userData.narrow as boolean;
 
       const fl = flipRef.current;
-      const centred = narrow && !poseOverride.current;
-      rig.position.set(centred ? 0 : pose.x * fl, centred ? pose.y + 0.15 : pose.y, 0);
-      rig.scale.setScalar(centred ? pose.scale * 1.15 : pose.scale);
+      if (!backdrop) {
+        const centred = narrow && !poseOverride.current;
+        rig.position.set(centred ? 0 : pose.x * fl, centred ? pose.y + 0.15 : pose.y, 0);
+        rig.scale.setScalar(centred ? pose.scale * 1.15 : pose.scale);
+      }
       rig.rotation.y = pose.rotY * fl + mouse.x * config.mouse.tilt + scroll * 1.6 + Math.sin(t * 0.25) * (poseOverride.current ? 0.3 : 0.08);
       rig.rotation.x = mouse.y * config.mouse.tilt * 0.5;
       // beam leans with the mouse; pans stay level like a real balance
@@ -155,6 +187,7 @@ export default function CosmicScene({ route, dir = "ltr", opacity = 0.95, pose: 
 
       camera.position.set(camBase.x + mouse.x * config.mouse.parallax, camBase.y - mouse.y * 0.6 - scroll * 1.2, camBase.z - scroll * 1.5);
       camera.lookAt(look.x, look.y - scroll * 0.8, look.z);
+      if (backdrop) { camera.updateMatrixWorld(); placeRig(fl); if (cur.o < 0.02) { host.style.opacity = "0"; return; } }
       renderer.render(scene, camera);
     };
     tick();

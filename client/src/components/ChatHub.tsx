@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Instagram, Linkedin, MessageCircle, Send, X, Headset } from "lucide-react";
 import { FAQS, UI, searchAll, type Locale } from "@/lib/i18n";
-import { insights } from "@/content/legalContent";
+import { searchPosts } from "@/content/insightsI18n";
 import { SITE } from "@/lib/site";
 
 const ICONS = [
@@ -40,14 +39,14 @@ export default function ChatHub({ locale }: { locale: Locale }) {
   const ask = (question: string, answer?: string) => {
     setMsgs(m => [...m, { from: "me", text: question }]);
     let reply = answer; let miss = false;
-    if (!reply) { const best = searchAll(question, locale, insights).find(h => h.kind === "faq" || h.kind === "area"); if (best) reply = best.snippet; else { reply = UI.chatFallback[locale]; miss = true; } }
+    if (!reply) { const best = searchAll(question, locale, searchPosts(locale)).find(h => h.kind === "faq" || h.kind === "area"); if (best) reply = best.snippet; else { reply = UI.chatFallback[locale]; miss = true; } }
     setOffer(miss);
     setTimeout(() => setMsgs(m => [...m, { from: "bot", text: reply! }]), 450);
   };
   const submit = () => { const v = text.trim(); if (!v) return; setText(""); ask(v); };
   const cur = ICONS[i];
 
-  return createPortal(
+  return (
     <div className="chat-hub">
       {open && (
         <div className="chat-panel" role="dialog" aria-label={UI.chatTitle[locale]}>
@@ -71,7 +70,6 @@ export default function ChatHub({ locale }: { locale: Locale }) {
         {open ? <X size={24} /> : <span key={cur.id} className="fab-icon"><cur.Icon size={26} /></span>}
         <span className="chat-dot" />
       </button>
-    </div>,
-    document.body
+    </div>
   );
 }

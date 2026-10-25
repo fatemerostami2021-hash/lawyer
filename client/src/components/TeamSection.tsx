@@ -3,12 +3,13 @@ import { useLanguage } from "./SiteChrome";
 import ClickCard from "./ClickCard";
 import { Carousel } from "./Slider";
 import { RESOURCES, TEAM, TEAM_UI } from "@/content/team";
+import { X } from "@/content/ui2";
 
 export function TeamSection() {
   const { locale } = useLanguage();
   return (
     <section className="team-section page-width">
-      <div className="section-heading"><span className="section-kicker">{TEAM_UI.kicker[locale]}</span><h2>{TEAM_UI.title[locale]}</h2></div>
+      <div className="section-heading"><span className="section-kicker">{X.teamKicker[locale]}</span><h2>{X.teamTitle[locale]}</h2></div>
       <Carousel perView={{ base: 1, md: 2, lg: 4 }} gap={20} autoplay={6000}>
         {TEAM.map(m => (
           <ClickCard key={m.id} href="/about" className="team-card" tilt>
@@ -34,7 +35,7 @@ export function TeamTips() {
   const { locale } = useLanguage();
   return (
     <section className="team-tips page-width">
-      <div className="section-heading"><span className="section-kicker">{TEAM_UI.kicker[locale]}</span><h2>{TEAM_UI.tipsTitle[locale]}</h2></div>
+      <div className="section-heading"><span className="section-kicker">{X.teamKicker[locale]}</span><h2>{X.tipsTitle[locale]}</h2></div>
       <Carousel perView={{ base: 1, md: 2, lg: 4 }} gap={18} autoplay={7000}>
         {TEAM.map(m => <ClickCard key={m.id} href="/contact" className="tip-card" tilt><span className="tip-by"><i>{m.initials}</i>{m.name[locale]} · {m.role[locale]}</span><p>{m.tip[locale]}</p></ClickCard>)}
       </Carousel>

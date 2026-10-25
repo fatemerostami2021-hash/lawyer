@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { Search, X } from "lucide-react";
 import { UI, searchAll, type Locale } from "@/lib/i18n";
-import { insights } from "@/content/legalContent";
+import { searchPosts } from "@/content/insightsI18n";
 
 export default function SearchOverlay({ open, onClose, locale, initial = "" }: { open: boolean; onClose: () => void; locale: Locale; initial?: string }) {
   const [q, setQ] = useState(initial);
@@ -10,7 +10,7 @@ export default function SearchOverlay({ open, onClose, locale, initial = "" }: {
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => { if (open) { setQ(initial); setTimeout(() => ref.current?.focus(), 50); } }, [open, initial]);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
-  const hits = useMemo(() => searchAll(q, locale, insights), [q, locale]);
+  const hits = useMemo(() => searchAll(q, locale, searchPosts(locale)), [q, locale]);
   if (!open) return null;
   const groups: { kind: "area" | "blog" | "faq"; label: string }[] = [
     { kind: "area", label: UI.groupAreas[locale] }, { kind: "faq", label: UI.groupFaq[locale] }, { kind: "blog", label: UI.groupBlog[locale] },

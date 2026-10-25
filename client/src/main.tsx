@@ -11,6 +11,22 @@ import "./upgrade.css";
 import "./upgrade2.css";
 import "./upgrade3.css";
 import "./upgrade4.css";
+import "./upgrade5.css";
+import SceneBackdrop from "./components/SceneBackdrop";
+
+// ---- Browser-tab icon: uses /logo.png if you add one, otherwise the generated gold-scales icon ----
+const setIcons = (png: string, svg?: string) => {
+  document.querySelectorAll("link[rel~='icon'], link[rel='apple-touch-icon'], link[rel='shortcut icon']").forEach(el => el.remove());
+  const add = (rel: string, href: string, type?: string, sizes?: string) => { const l = document.createElement("link"); l.rel = rel; l.href = href; if (type) l.type = type; if (sizes) l.setAttribute("sizes", sizes); document.head.appendChild(l); };
+  if (svg) add("icon", svg, "image/svg+xml");
+  add("icon", png, "image/png", "any"); add("apple-touch-icon", png);
+};
+setIcons("/favicon-192.png?v=3", "/favicon.svg?v=3");
+fetch("/logo.png", { method: "HEAD" }).then(r => { if (r.ok && (r.headers.get("content-type") || "").startsWith("image")) setIcons("/logo.png?v=3"); }).catch(() => {});
+
+// ---- One page-wide canvas for the 3D scales (shared by every page) ----
+const sceneRoot = document.createElement("div"); sceneRoot.id = "scene-root"; sceneRoot.setAttribute("aria-hidden", "true"); document.body.appendChild(sceneRoot);
+createRoot(sceneRoot).render(<SceneBackdrop />);
 
 const queryClient = new QueryClient();
 

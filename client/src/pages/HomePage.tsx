@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, FileText, Gavel, Globe, Scale, Search, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage } from "@/components/SiteChrome";
@@ -8,10 +8,10 @@ import { TeamSection } from "@/components/TeamSection";
 import ClickCard from "@/components/ClickCard";
 import InsightCard from "@/components/InsightCard";
 import { Carousel, FadeSlider, type Slide } from "@/components/Slider";
-import { DETAILS, DOCTOR, DOCTOR_MORE, HOME_UI, QUOTES, SITUATIONS, STEPS } from "@/content/home";
+import ProcessFlow from "@/components/ProcessFlow";
+import { DETAILS, DOCTOR, DOCTOR_MORE, HOME_UI, QUOTES, SITUATIONS } from "@/content/home";
 import { GALLERY, X, photoUrl } from "@/content/ui2";
 
-const CosmicScene = lazy(() => import("@/components/CosmicScene"));
 const ICONS: Record<string, typeof Scale> = { corporate: Scale, contracts: FileText, "market-entry": Globe, disputes: Gavel, ip: ShieldCheck };
 
 function DoctorPhoto() {
@@ -33,6 +33,7 @@ export default function HomePage() {
   const [q, setQ] = useState("");
   const [pick, setPick] = useState(0);
   const [qi, setQi] = useState(0);
+  const [open, setOpen] = useState(false);
   const chips = t("heroChips").split("|");
   useEffect(() => { const id = setInterval(() => setQi(v => (v + 1) % QUOTES.length), 7000); return () => clearInterval(id); }, []);
   const quote = QUOTES[qi];
@@ -41,29 +42,31 @@ export default function HomePage() {
   const gallery: Slide[] = GALLERY.map(g => ({ img: `/assets/photos/${g.img}.webp`, title: g.cap[locale], text: g.sub[locale], href: g.href, cta: X.discover[locale] }));
 
   return <main className="route-page home-page">
-    {/* 1 — Doctor first: photo + text + 3D scales in one screen (also on mobile) */}
+    {/* 1 — Doctor first: photo + text; the 3D scales are drawn by the page-wide backdrop and glued to .doctor-anchor */}
     <section className="doctor-section doctor-first page-width">
-      <div className="hero-stage" aria-hidden="true"><Suspense fallback={null}><CosmicScene route="/" dir={locale === "en" ? "ltr" : "rtl"} opacity={1} pose={{ x: 0, y: -0.55, scale: 0.82, rotY: -0.3 }} /></Suspense></div>
       <DoctorPhoto />
+      <div className="hero-anchor doctor-anchor" data-scene-anchor aria-hidden="true" />
       <div className="doctor-copy">
         <div className="doctor-head">
           <span className="section-kicker">{HOME_UI.doctorKicker[locale]}</span>
           <h2>{DOCTOR.name[locale]}</h2>
           <strong className="doctor-role">{DOCTOR.role[locale]}</strong>
         </div>
-        <div className="doctor-more">
+        <div className={`doctor-more${open ? " is-open" : ""}`}>
           <p className="doctor-lead">{DOCTOR.bio[locale]}</p>
-          {DOCTOR_MORE.about[locale].map((para, i) => <p key={i}>{para}</p>)}
-          <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
-          <dl className="doctor-facts">{DOCTOR_MORE.facts.map((f, i) => <div key={i}><dt>{f.k[locale]}</dt><dd>{f.v[locale]}</dd></div>)}</dl>
-          <div className="doctor-focus"><span>{DOCTOR_MORE.focus[locale]}</span>{AREAS.map(a => <Link key={a.id} href={`/expertise#${a.id}`}>{a.title[locale]}</Link>)}</div>
+          <div className="doctor-extra">
+            {DOCTOR_MORE.about[locale].map((para, i) => <p key={i}>{para}</p>)}
+            <ul>{DOCTOR.points[locale].map(p => <li key={p}>{p}</li>)}</ul>
+            <dl className="doctor-facts">{DOCTOR_MORE.facts.map((f, i) => <div key={i}><dt>{f.k[locale]}</dt><dd>{f.v[locale]}</dd></div>)}</dl>
+            <div className="doctor-focus"><span>{DOCTOR_MORE.focus[locale]}</span>{AREAS.map(a => <Link key={a.id} href={`/expertise#${a.id}`}>{a.title[locale]}</Link>)}</div>
+          </div>
+          <button type="button" className="doctor-toggle" onClick={() => setOpen(v => !v)} aria-expanded={open}>{open ? X.readLessDoctor[locale] : X.readMoreDoctor[locale]}</button>
           <div className="doctor-actions">
             <Link className="button button-gold" href="/about">{t("about")}<ArrowUpRight size={15} /></Link>
             <Link className="button button-ghost" href="/contact">{t("consult")}</Link>
           </div>
         </div>
       </div>
-      <div className="hero-slot" aria-hidden="true" />
     </section>
 
     {/* 2 — Photo slider */}
@@ -79,7 +82,7 @@ export default function HomePage() {
     </section>
 
     <section className="pick-section page-width">
-      <div className="section-heading"><span className="section-kicker">01</span><h2>{HOME_UI.pickTitle[locale]}</h2><p>{HOME_UI.pickSub[locale]}</p></div>
+      <div className="section-heading"><span className="section-kicker">01</span><h2>{X.pickTitle[locale]}</h2><p>{X.pickSub[locale]}</p></div>
       <div className="pick-grid">
         <div className="pick-list">{SITUATIONS.map((s, n) => <button key={s.area} type="button" className={pick === n ? "active" : ""} onClick={() => setPick(n)}><span>{String(n + 1).padStart(2, "0")}</span>{s.text[locale]}</button>)}</div>
         <div className="pick-result" key={sit.area}>
@@ -93,7 +96,7 @@ export default function HomePage() {
 
     {/* 4 — Services slider */}
     <section className="services-section page-width">
-      <div className="section-heading"><span className="section-kicker">02</span><h2>{HOME_UI.servicesTitle[locale]}</h2></div>
+      <div className="section-heading"><span className="section-kicker">02</span><h2>{X.servicesTitle[locale]}</h2></div>
       <Carousel perView={{ base: 1, md: 2, lg: 3 }} gap={22} autoplay={6500}>
         {AREAS.map((a, n) => { const Icon = ICONS[a.id]; const d = DETAILS[a.id]; return (
           <ClickCard key={a.id} href={`/expertise#${a.id}`} className="service-card" tilt>
@@ -112,12 +115,12 @@ export default function HomePage() {
     <TeamSection />
 
     <section className="steps-section page-width">
-      <div className="section-heading"><span className="section-kicker">03</span><h2>{HOME_UI.stepsTitle[locale]}</h2></div>
-      <div className="steps-grid">{STEPS.map((s, n) => <ClickCard key={n} href="/contact" className="step-card" tilt><span className="area-no">{String(n + 1).padStart(2, "0")}</span><h3>{s.t[locale]}</h3><p>{s.d[locale]}</p></ClickCard>)}</div>
+      <div className="section-heading"><span className="section-kicker">03</span><h2>{X.stepsTitle[locale]}</h2></div>
+      <ProcessFlow />
     </section>
 
     <section className="wisdom-section page-width">
-      <span className="section-kicker">{HOME_UI.wisdomTitle[locale]}</span>
+      <span className="section-kicker">{X.wisdomTitle[locale]}</span>
       <blockquote key={qi} className="wisdom-quote"><p>{quote.text[locale]}</p><cite>{quote.by[locale]}</cite></blockquote>
       <div className="wisdom-nav"><button type="button" onClick={() => setQi((qi + QUOTES.length - 1) % QUOTES.length)} aria-label={HOME_UI.prev[locale]}><ChevronLeft size={20} /></button><span>{qi + 1} / {QUOTES.length}</span><button type="button" onClick={() => setQi((qi + 1) % QUOTES.length)} aria-label={HOME_UI.next[locale]}><ChevronRight size={20} /></button></div>
     </section>
