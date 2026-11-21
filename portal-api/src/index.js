@@ -1,0 +1,24 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { CFG } from './config.js';
+import { isEmpty, flush } from './db.js';
+import { attachUser } from './auth.js';
+import { router } from './app.js';
+import { seed } from './seed.js';
+import { startBot, tgInfo } from './telegram.js';
+
+if (isEmpty()) console.log('[seed] empty database → loading sample data:', seed());
+const app = express();
+app.set('trust proxy', 1);
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors({ origin: (o, cb) => cb(null, !o || CFG.clientOrigins.includes(o)), credentials: true }));
+app.use(express.json({ limit: '200kb' }));
+app.use(cookieParser());
+app.use(attachUser);
+app.get('/papi/health', (_q, r) => r.json({ ok: true, telegram: tgInfo() }));
+app.use('/papi', router);
+app.use((err, _req, res, _next) => { console.error(err.message); res.status(err.status || 400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? 'حجم فایل بیش از ۱۰ مگابایت است' : err.message || 'خطا' }); });
+const server = app.listen(CFG.port, () => { console.log(`\n✅ Portal API: http://localhost:${CFG.port}/papi/health`); startBot(); });
+for (const s of ['SIGINT', 'SIGTERM']) process.on(s, () => { flush(); server.close(() => process.exit(0)); });

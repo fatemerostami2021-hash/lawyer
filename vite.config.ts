@@ -188,6 +188,7 @@ export default defineConfig({
   },
   server: {
     host: true,
+    proxy: { '/papi': { target: 'http://localhost:4000', changeOrigin: true } },
     allowedHosts: [
       ".manuspre.computer",
       ".manus.computer",

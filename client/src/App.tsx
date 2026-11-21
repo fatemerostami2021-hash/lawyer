@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
+import PortalGate from "./portal/PortalGate";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SiteChrome from "./components/SiteChrome";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -30,5 +31,5 @@ function Router() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Toaster /><SiteChrome><Router /></SiteChrome></TooltipProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Toaster /><PortalGate><SiteChrome><Router /></SiteChrome></PortalGate></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }

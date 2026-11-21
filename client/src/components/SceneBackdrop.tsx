@@ -13,5 +13,6 @@ export default function SceneBackdrop() {
     const id = window.setInterval(f, 500);
     return () => { ev.forEach(e => window.removeEventListener(e, f)); mo.disconnect(); window.clearInterval(id); };
   }, []);
+  if (/^\/(portal|admin)(\/|$)/.test(s.path)) return null; // no 3D scene inside the portal/admin panels
   return <Suspense fallback={null}><CosmicScene route={s.path} dir={s.dir} opacity={1} mode="backdrop" /></Suspense>;
 }
