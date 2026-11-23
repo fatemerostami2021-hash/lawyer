@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { APPT, CASE_ST } from "./fmt";
+import { BASE, isDemo } from "./api";
 
 export const Badge = ({ map, k }: { map: Record<string, [string, string]>; k: string }) => { const [t, c] = map[k] || [k, "gray"]; return <span className={`badge ${c}`}>{t}</span>; };
 export const ApptBadge = ({ k }: { k: string }) => <Badge map={APPT} k={k} />;
@@ -21,5 +22,16 @@ export function useBusy() { const [b, set] = useState(false); return [b, async (
 export const Stat = ({ icon, label, value, sub }: { icon: ReactNode; label: string; value: ReactNode; sub?: string }) => <div className="card stat"><div className="ic">{icon}</div><div><b>{value}</b><span>{label}</span>{sub && <div className="small muted">{sub}</div>}</div></div>;
 export const Tabs = ({ tabs, on, set }: { tabs: [string, string][]; on: string; set: (k: string) => void }) => <div className="tabs" role="tablist">{tabs.map(([k, l]) => <button key={k} role="tab" aria-selected={on === k} className={on === k ? "on" : ""} onClick={() => set(k)}>{l}</button>)}</div>;
 
-export function download(url: string) { const a = document.createElement("a"); a.href = url; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove(); }
+export async function download(url: string) {
+  const a = document.createElement("a"); a.rel = "noopener";
+  if (isDemo()) { // demo: build the file in the browser
+    try { const { demoDownload } = await import("./demo/engine"); const { blob, filename } = await demoDownload(url.startsWith(BASE) ? url.slice(BASE.length) : url); a.href = URL.createObjectURL(blob); a.download = filename; }
+    catch (e: any) { fail(e); return; }
+  } else a.href = url;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+export function DemoBanner() {
+  if (!isDemo()) return null;
+  return <div className="demo-bar" role="status"><span>🧪 نسخه نمایشی — داده‌ها خیالی است و فقط در همین مرورگر ذخیره می‌شود</span><button onClick={async () => { if (confirm("همه تغییرات دمو پاک شود و داده‌های اولیه برگردد؟")) { const { resetDemo } = await import("./demo/core"); resetDemo(); location.reload(); } }}>بازنشانی دمو</button></div>;
+}
 export function useNoIndex() { useEffect(() => { const m = document.createElement("meta"); m.name = "robots"; m.content = "noindex,nofollow"; document.head.appendChild(m); const t = document.title; document.title = "پنل دفتر وکالت"; return () => { m.remove(); document.title = t; }; }, []); }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, Route, Switch, useLocation } from "wouter";
 import { BarChart3, Briefcase, CalendarCheck, CalendarDays, FileText, LayoutDashboard, LogOut, Menu, MessageSquare, Settings as Cog, ShieldCheck, Users, Wallet } from "lucide-react";
-import { useApi } from "./api";
+import { isDemo, useApi } from "./api";
+import { TgBell } from "./TgPanel";
 import { useAuth } from "./PortalApp";
 import Dashboard from "./Dashboard";
 import { AppointmentsPage } from "./AdminAppointments";
@@ -29,6 +30,7 @@ export default function AdminApp() {
     </aside>
     <div className="pt-main">
       <header className="pt-top"><button className="btn ghost sm only-m" onClick={() => setOpen(true)} aria-label="منو"><Menu size={18} /></button><h1>{cur?.[1] || "جزئیات"}</h1><div className="sp" />
+        {isDemo() && <TgBell />}
         <span className={"chip " + (data?.telegram?.paired ? "ok" : "warn")}>{data?.telegram?.paired ? "تلگرام متصل ✓" : "تلگرام: نیاز به اتصال"}</span></header>
       <main className="pt-body"><Switch>
         <Route path="/admin" component={Dashboard} /><Route path="/admin/appointments" component={AppointmentsPage} />

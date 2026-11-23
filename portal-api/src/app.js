@@ -81,6 +81,7 @@ router.post('/auth/logout', (req, res) => { clear(res); res.json({ ok: true }); 
 // ------------------------------------------------------------------ public booking info
 router.get('/public/booking', (_q, res) => { const s = getSettings(); res.json({ open: s.bookingOpen, maxAdvanceDays: s.maxAdvanceDays, types: Object.fromEntries(Object.entries(s.types).filter(([, t]) => t.enabled).map(([k, t]) => [k, { label: t.label, price: t.price, duration: t.duration, note: t.note }])), office: s.office, today: todayStr(), tehranNow: nowTehran() }); });
 router.get('/public/slots', (req, res) => res.json({ slots: slotsFor(String(req.query.date || ''), String(req.query.type || '')) }));
+router.get('/public/availability', (req, res) => { const type = String(req.query.type || ''); const from = String(req.query.from || todayStr()); const to = String(req.query.to || addDays(from, 31)); const days = {}; for (let d = from, i = 0; d <= to && i < 70; d = addDays(d, 1), i++) { const n = slotsFor(d, type).length; if (n) days[d] = n; } res.json({ days }); });
 router.get('/public/meta', (_q, res) => res.json({ caseTypes: CASE_TYPES }));
 
 // ------------------------------------------------------------------ helpers
