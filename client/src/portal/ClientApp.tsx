@@ -25,11 +25,21 @@ function HomePage() {
   const c = d.client; const incomplete = c.status === "new";
   return <div className="grid">
     <div className="card" style={{ background: "linear-gradient(135deg,#0b1b33,#16305a)", color: "#fff" }}><h2 style={{ color: "#f4d487", fontSize: 21 }}>سلام {c.name} 👋</h2><p style={{ color: "#cdd3de" }}>به پورتال اختصاصی موکلان دفتر وکالت دکتر نیک‌سرشت خوش آمدید. از اینجا روند پرونده، جلسات، مدارک و صورتحساب‌هایتان را می‌بینید و نوبت می‌گیرید.</p><div className="row" style={{ marginTop: 12 }}><Link href="/portal/book" className="btn gold">دریافت نوبت مشاوره</Link>{incomplete && <Link href="/portal/profile" className="btn ghost">تکمیل پروفایل</Link>}</div></div>
+    <FirstSteps c={c} />
     <div className="grid g4"><Stat icon={<Briefcase size={22} />} label="پرونده فعال" value={fd(c.cases.filter((x: any) => x.status !== "closed").length)} /><Stat icon={<CalendarPlus size={22} />} label="نوبت پیش‌رو" value={fd(d.upcomingAppts.length)} /><Stat icon={<Wallet size={22} />} label="مانده حساب" value={d.balance > 0 ? money(d.balance) : "تسویه ✓"} /><Stat icon={<MessageSquare size={22} />} label="پیام جدید" value={fd(d.unread)} /></div>
     <div className="grid g2">
       <div className="card"><h3>نوبت‌های من</h3>{!d.upcomingAppts.length ? <Empty>نوبت فعالی ندارید</Empty> : <div className="list">{d.upcomingAppts.map((a: any) => <div key={a.id} className="row sb"><div><b>{TYPES[a.type]}</b> · {jd(a.date, "day")} · {fd(a.time)}</div><ApptBadge k={a.status} /></div>)}</div>}</div>
       <div className="card"><h3>جلسات و مهلت‌های پیش‌رو</h3>{!d.nextSessions.length && !d.deadlines.length ? <Empty>موردی ثبت نشده</Empty> : <div className="list">{d.nextSessions.map((s: any) => <div key={s.id} className="row sb"><span>⚖️ {s.court}</span><span className="badge blue">{jd(s.date, "day")} · {rel(s.date)}</span></div>)}{d.deadlines.map((s: any) => <div key={s.id} className="row sb"><span>⏳ {s.title}</span><span className="badge amber">{jd(s.date, "day")}</span></div>)}</div>}</div></div>
     <div className="card"><h3>پرونده‌های من</h3><div className="list">{c.cases.map((x: any) => <Link key={x.id} href={"/portal/cases/" + x.id} className="row sb" style={{ display: "flex" }}><div><b>{x.title}</b><div className="small muted">{CASE_TYPES[x.type]}</div></div><CaseBadge k={x.status} /></Link>)}{!c.cases.length && <Empty>هنوز پرونده‌ای برای شما باز نشده است.</Empty>}</div></div></div>;
+}
+function FirstSteps({ c }: { c: any }) {
+  const steps: [boolean, string, string, string][] = [
+    [c.status !== "new", "پروفایل خود را کامل کنید", "/portal/profile", "تکمیل پروفایل"],
+    [c.documents.length > 0, "مدارک خود را بارگذاری کنید", "/portal/documents", "بارگذاری مدرک"],
+    [c.appointments.length > 0, "از تقویم، وقت مشاوره بگیرید", "/portal/book", "دریافت نوبت"],
+  ];
+  if (c.cases.length || steps.every(x => x[0])) return null;
+  return <div className="card"><h3>شروع کار در ۳ قدم</h3><div className="list">{steps.map(([done, t, to, b]) => <div key={to} className="row sb"><span>{done ? "✅" : "⬜"} {t}</span>{done ? <span className="badge green">انجام شد</span> : <Link href={to} className="btn ghost sm">{b}</Link>}</div>)}</div></div>;
 }
 function CasesPage() {
   const { data } = useApi<any>("/me/overview"); if (!data) return <Loading />;

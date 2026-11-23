@@ -109,3 +109,28 @@
 .tg-kb button{flex:1;background:#223344;color:#8fc4ff;border-radius:8px;padding:8px 6px;font-weight:600;font-size:13px}.tg-kb button:hover{background:#2b4258}
 .tg-foot{display:flex;gap:6px;padding:10px;background:#17212b;border-top:1px solid #0b121a}
 .tg-foot button{background:#223344;color:#8fc4ff;border-radius:99px;padding:5px 12px;font-size:12.5px;display:inline-flex;gap:4px;align-items:center;direction:ltr}
+
+/* ---- usage-guide bar + chooser page ---- */
+.demo-bar{background:#10213b;color:#e9d9a6;border-bottom:1px solid #26395a;padding:5px 10px;font-size:12.5px}
+.demo-bar .pill{border:1px solid #d9b45b;color:#f4d487;border-radius:99px;padding:1px 12px;font-weight:600}
+.demo-bar .pill.on{background:#d9b45b;color:#07101d}
+.demo-bar button{background:#d9b45b;color:#07101d}
+.demo-bar button.soft{background:transparent;color:#cdd3de;border:1px solid #3a4d70}
+@media(max-width:640px){.demo-bar .long{display:none}.pt.has-demo .pt-top,.pt.has-demo .pt-side{top:34px}.pt.has-demo .pt-side{height:calc(100vh - 34px)}}
+.guide-ol{margin:0 0 12px;padding:0 18px 0 0;display:grid;gap:6px}
+.ds-wrap{min-height:100%;display:grid;place-items:center;padding:28px 16px;background:radial-gradient(circle at 80% 10%,#16305a 0,transparent 42%),#07101d}
+.ds-in{width:min(980px,100%)}
+.ds-head{text-align:center;color:#cdd3de;margin-bottom:22px;display:grid;justify-items:center;gap:8px}
+.ds-head h1{color:#f4d487;font-size:26px}
+.ds-head p{max-width:640px;color:#aab4c6}
+.ds-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media(max-width:760px){.ds-grid{grid-template-columns:1fr}}
+.ds-card{background:#fff;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.ds-card h2{font-size:20px}
+.ds-ic{width:46px;height:46px;border-radius:12px;background:#f3ead0;color:#8e702e;display:grid;place-items:center}
+.ds-sub{color:#55606f}
+.ds-card ol{margin:0;padding:0 18px 0 0;display:grid;gap:5px;flex:1}
+.ds-note{background:#fff8e1;border:1px dashed #d9b45b;border-radius:10px;padding:8px 12px;font-size:13px}
+.ds-btn{width:100%;margin-top:4px;padding:12px 16px}
+.btn.dark{background:#0b1b33}
+.ds-foot{text-align:center;color:#aab4c6;margin-top:18px;font-size:13px}.ds-foot a{color:#f4d487;text-decoration:underline!important}

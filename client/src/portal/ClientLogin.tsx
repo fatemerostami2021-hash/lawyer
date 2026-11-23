@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { api } from "./api";
+import { api, isDemo } from "./api";
 import { Field, useBusy } from "./ui";
 import { useAuth } from "./PortalApp";
 import { fd } from "./fmt";
@@ -18,17 +18,20 @@ export default function ClientLogin() {
     {step === "mobile" ? <form onSubmit={e => { e.preventDefault(); send(); }}>
       <p className="muted" style={{ marginBottom: 14 }}>شماره موبایل خود را وارد کنید؛ یک کد تأیید برایتان ارسال می‌شود. اگر قبلاً ثبت‌نام نکرده‌اید، همین‌جا حساب شما ساخته می‌شود.</p>
       <Field label="شماره موبایل"><input className="ltr" inputMode="numeric" placeholder="09123456789" value={mobile} onChange={e => setMobile(e.target.value)} autoFocus /></Field>
+      {isDemo() && <div className="demo" style={{ marginBottom: 12 }}>برای امتحان کردن:<div className="row" style={{ marginTop: 8, gap: 8, flexWrap: "wrap" }}>
+        <button type="button" className="btn ghost sm" onClick={() => setMobile("09120000001")}>موکلی که پرونده دارد</button>
+        <button type="button" className="btn ghost sm" onClick={() => setMobile("09121234567")}>ثبت‌نام به‌عنوان موکل جدید</button></div></div>}
       {err && <p style={{ color: "#a3231b", marginBottom: 10 }}>{err}</p>}
       <button className="btn gold" style={{ width: "100%" }} disabled={busy || mobile.length < 10}>دریافت کد تأیید</button>
     </form> : <form onSubmit={e => { e.preventDefault(); verify(); }}>
       <p className="muted" style={{ marginBottom: 12 }}>کد ۵ رقمی ارسال‌شده به <b className="ltr">{fd(mobile)}</b> را وارد کنید.</p>
-      {demo && <div className="demo" style={{ marginBottom: 12 }}>🔐 حالت نمایشی — کد شما: <b style={{ fontSize: 18, letterSpacing: 3 }}>{fd(demo)}</b><br /><span className="small muted">(در نسخه نهایی کد با پیامک ارسال می‌شود و اینجا نمایش داده نمی‌شود)</span></div>}
+      {demo && <div className="demo" style={{ marginBottom: 12 }}>🔐 کد تأیید شما: <b style={{ fontSize: 18, letterSpacing: 3 }}>{fd(demo)}</b><br /><span className="small muted">(در نسخه نهایی، کد با پیامک ارسال می‌شود)</span></div>}
       <Field label="کد تأیید"><input className="otp" inputMode="numeric" maxLength={5} value={code} onChange={e => setCode(e.target.value.replace(/\D/g, ""))} autoFocus /></Field>
       {!exists && <Field label="نام و نام خانوادگی (برای ثبت‌نام)"><input value={name} onChange={e => setName(e.target.value)} placeholder="مثلاً: علی رضایی" /></Field>}
       {err && <p style={{ color: "#a3231b", marginBottom: 10 }}>{err}</p>}
       <button className="btn gold" style={{ width: "100%" }} disabled={busy || code.length < 5 || (!exists && name.trim().length < 3)}>{exists ? "ورود" : "ثبت‌نام و ورود"}</button>
       <div className="row sb" style={{ marginTop: 12 }}><button type="button" className="small muted" onClick={() => { setStep("mobile"); setCode(""); }}>← تغییر شماره</button><button type="button" className="small" disabled={left > 0} onClick={send} style={{ color: left ? "#999" : "#8e702e" }}>{left > 0 ? `ارسال مجدد (${fd(left)})` : "ارسال مجدد کد"}</button></div>
     </form>}
-    <p className="small muted" style={{ marginTop: 14 }}><Link href="/admin">ورود وکیل / منشی →</Link> · <Link href="/">بازگشت به سایت</Link></p>
+    <p className="small muted" style={{ marginTop: 14 }}><Link href="/demo">← انتخاب نوع پنل (موکل / وکیل)</Link> · <Link href="/">بازگشت به سایت</Link></p>
   </div></div>;
 }

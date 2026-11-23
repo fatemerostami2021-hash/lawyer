@@ -80,7 +80,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
               <div className="language-switcher flag-switcher" aria-label="Language">
                 {languageOptions.map(o => <button key={o.id} type="button" className={locale === o.id ? "active" : ""} onClick={() => setLocale(o.id)} aria-label={o.label} title={o.label}><Flag code={o.id} /></button>)}
               </div>
-              <Link className="header-cta" href="/portal"><UserRound size={14} strokeWidth={1.5} />{({ fa: "پورتال موکلان", en: "Client Portal", ar: "بوابة العملاء" } as Record<string, string>)[locale] || "Client Portal"}</Link>
+              <Link className="header-cta" href="/demo"><UserRound size={14} strokeWidth={1.5} />{({ fa: "ورود به پنل‌ها", en: "Sign in", ar: "تسجيل الدخول" } as Record<string, string>)[locale] || "Client Portal"}</Link>
               <Link className="header-cta" href="/contact"><WaveText text={t("consult")} locale={locale} /><ArrowUpRight size={15} strokeWidth={1.5} /></Link>
               <button className="menu-trigger" type="button" aria-label={menuOpen ? t("close") : t("menu")} onClick={() => setMenuOpen(v => !v)}>{menuOpen ? <X size={21} /> : <Menu size={21} />}</button>
             </div>
@@ -111,7 +111,7 @@ export default function SiteChrome({ children }: { children: ReactNode }) {
             <Link href="/">{t("home")}</Link><Link href="/expertise">{t("expertise")}</Link><Link href="/approach">{t("approach")}</Link><Link href="/insights">{t("blog")}</Link><Link href="/faq">{t("faq")}</Link><Link href="/about">{t("about")}</Link><Link href="/contact">{t("contact")}</Link>
             <button type="button" onClick={() => { setMenuOpen(false); openSearch(); }}><Search size={16} /> {t("search")}</button>
             <div className="mobile-langs">{languageOptions.map(o => <button key={o.id} type="button" className={locale === o.id ? "active" : ""} onClick={() => setLocale(o.id)} aria-label={o.label}><Flag code={o.id} /><span>{o.label}</span></button>)}</div>
-            <Link href="/portal">{({ fa: "پورتال موکلان", en: "Client Portal", ar: "بوابة العملاء" } as Record<string, string>)[locale] || "Client Portal"}</Link>
+            <Link href="/demo">{({ fa: "پورتال موکلان", en: "Client Portal", ar: "بوابة العملاء" } as Record<string, string>)[locale] || "Client Portal"}</Link>
             <Link className="button button-gold mobile-cta" href="/contact">{t("consult")}</Link>
           </div>}
         </header>
